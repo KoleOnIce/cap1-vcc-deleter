@@ -47,12 +47,17 @@ class CapitalOneVCCDeleter:
 
         self.session.headers["accept"] = "application/json;v=2"
 
-        while True:
+        response = self.session.post(url, json=payload)
+        response_json = response.json()
+        
+        if response_json.get("type") == "errorResponse":
+            print(f"No VCCs found for {card_reference_id}")
+            return []
+        
+        while response_json.get("id") == "800000":
+            print(f"Retrying initial request due to error: {response.text.strip()}")
             response = self.session.post(url, json=payload)
-            if "id" in response.json() and response.json()["id"] == "800000":
-                print(f"Retrying initial request due to error: {response.text.strip()}")
-                continue
-            break
+            response_json = response.json()
 
         total_count = response.json()["count"]
         max_offset = (total_count + limit - 1) // limit 
