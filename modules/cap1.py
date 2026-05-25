@@ -50,7 +50,7 @@ class CapitalOneVCCDeleter:
         response = self.session.post(url, json=payload)
         response_json = response.json()
         
-        if response_json.get("id") == "4013":
+        if response_json.get("id") == 4013:
             print(f"No VCCs found for {card_reference_id}")
             return []
         
